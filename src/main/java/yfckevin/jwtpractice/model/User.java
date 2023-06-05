@@ -2,6 +2,7 @@ package yfckevin.jwtpractice.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,19 +18,19 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
     @Id
-    private UUID id;
-
+    @GeneratedValue
+    private Integer id;
+    private String firstname;
+    private String lastname;
     private String email;
+    private String password;
 
-    @JsonIgnore
-    private String passwordDigest;
-
-    private String name;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -44,7 +45,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public String getPassword() {
-        return getPasswordDigest();
+        return getPassword();
     }
 
     @JsonIgnore

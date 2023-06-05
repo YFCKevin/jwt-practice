@@ -2,7 +2,9 @@ package yfckevin.jwtpractice.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +14,13 @@ import java.util.Optional;
 @Component
 public class JWTUtil {
 
+    @Value("${application.security.jwt.secret-key}")
     private String secretKey;
+    @Value("${application.security.jwt.lifetime}")
     private int lifeTime;
 
     // 產生token，將userId簽署到token內，供之後的CRUD用途
-    public String sign(String userEmail){
+    public String generateToken(String userEmail){
         return Optional
                 .of(new Date())
                 .map(v -> Jwts
@@ -28,7 +32,7 @@ public class JWTUtil {
                         // JWT發行時間，代表new Date()
                         .setIssuedAt(v)
                         .setId(userEmail)
-                        .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
+                        .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)), SignatureAlgorithm.HS256)
                         .compact()
                 )
                 .get();
@@ -56,7 +60,7 @@ public class JWTUtil {
         return Jwts
                 .parserBuilder()
                 // signing key主要用來驗證
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)))
                 .build()
                 .parseClaimsJwt(token)
                 // 取出all claims

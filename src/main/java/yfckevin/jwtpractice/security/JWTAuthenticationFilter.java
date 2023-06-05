@@ -27,7 +27,9 @@ import java.util.Optional;
 public class JWTAuthenticationFilter extends OncePerRequestFilter{
 
 
+    @Autowired
     private JWTUtil jwtUtil;
+    @Autowired
     private AuthService authService;
 
     @Override
@@ -41,7 +43,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
         final String jwt;
         final String userEmail;
 
-        if(authHeader == null || !authHeader.startsWith("bearer ")){
+        if(authHeader == null || !authHeader.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
         }
