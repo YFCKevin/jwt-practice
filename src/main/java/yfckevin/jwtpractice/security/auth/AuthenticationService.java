@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import yfckevin.jwtpractice.model.Role;
 import yfckevin.jwtpractice.model.User;
 import yfckevin.jwtpractice.repository.UserRepository;
-import yfckevin.jwtpractice.util.JWTUtil;
+import yfckevin.jwtpractice.service.JwtService;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JWTUtil jwtUtil;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -28,7 +28,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
-        var jwtToken = jwtUtil.generateToken(user.getEmail());
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -43,8 +43,7 @@ public class AuthenticationService {
         );
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtUtil.generateToken(user.getEmail());
-        System.out.println(jwtToken);
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

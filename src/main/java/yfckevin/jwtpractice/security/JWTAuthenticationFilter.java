@@ -11,15 +11,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import yfckevin.jwtpractice.service.AuthService;
-import yfckevin.jwtpractice.util.JWTUtil;
-
+import yfckevin.jwtpractice.service.JwtService;
 import java.io.IOException;
 
-import java.util.Optional;
 
 // 繼承OncePerRequestFilter，代表每個request都會經過此filter
 @Component
@@ -28,9 +26,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
 
 
     @Autowired
-    private JWTUtil jwtUtil;
+    private JwtService jwtService;
     @Autowired
-    private AuthService authService;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -49,14 +47,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter{
         }
 
         jwt = authHeader.substring(7);
-        userEmail = jwtUtil.verify(jwt);
+        userEmail = jwtService.extractUsername(jwt);
 
         // 如果有傳入email且尚未經過驗證(Authentication)
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             // 帶入email去資料庫取出userDetails
-            UserDetails userDetails = this.authService.loadUserByUsername(userEmail);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             // 再來檢核userDetails中的userEmail是否相同，且token是否過期
-            if(jwtUtil.isTokenValid(jwt, userDetails)){
+            if(jwtService.isTokenValid(jwt, userDetails)){
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
