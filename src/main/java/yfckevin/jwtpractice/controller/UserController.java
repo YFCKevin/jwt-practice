@@ -14,10 +14,10 @@ import java.security.Principal;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/v1/users")
+@RequestMapping("/api/v1.0/users")
 @RequiredArgsConstructor
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping(value = "/")
     public ResponseEntity<?> getAllUser() {

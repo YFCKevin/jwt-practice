@@ -20,8 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserRepository userRepo;
 
     @Bean
     public UserDetailsService userDetailsService() {

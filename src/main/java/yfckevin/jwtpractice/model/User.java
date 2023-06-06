@@ -43,13 +43,13 @@ public class User implements UserDetails {
     @JsonIgnore
     @Override
     public String getPassword() {
-        return getPassword();
+        return password;
     }
 
     @JsonIgnore
     @Override
     public String getUsername() {
-        return getId().toString();
+        return getEmail().toString();
     }
 
     @JsonIgnore
